@@ -1,0 +1,2 @@
+# animat
+Math animation library
