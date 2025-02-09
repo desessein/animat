@@ -20,6 +20,7 @@ from wgpu import (
     PipelineLayoutDescriptor,
     BindGroupEntry,
     BufferBinding,
+    KaleidoscopeAnimation,
 )
 from sys.info import sizeof
 
@@ -31,7 +32,8 @@ def main():
     glfw.window_hint(glfw.CLIENT_API, glfw.NO_API)
     window = glfw.Window(640, 480, "Hello, WebGPU")
 
-    renderer = Renderer(window)
+    animation = KaleidoscopeAnimation()
+    renderer = Renderer[KaleidoscopeAnimation](window, animation)
 
     u_time = Float32(0)
     while not window.should_close():
