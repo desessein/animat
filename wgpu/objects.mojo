@@ -267,7 +267,7 @@ struct CommandBuffer:
         )
 
 
-struct CommandEncoder:
+struct CommandEncoder(Copyable):
     var _handle: _c.WGPUCommandEncoder
 
     fn __init__(out self, unsafe_ptr: _c.WGPUCommandEncoder):
@@ -276,6 +276,9 @@ struct CommandEncoder:
     fn __moveinit__(mut self, owned rhs: Self):
         self._handle = rhs._handle
         rhs._handle = _c.WGPUCommandEncoder()
+
+    fn __copyinit__(out self, other: Self):
+        self._handle = other._handle
 
     fn __del__(owned self):
         if self._handle:
@@ -705,7 +708,7 @@ struct CommandEncoder:
 #     ]("wgpuComputePipelineSetLabel")(handle, label)
 
 
-struct Device:
+struct Device(Copyable):
     var _handle: _c.WGPUDevice
 
     fn __init__(out self, unsafe_ptr: _c.WGPUDevice):
@@ -714,6 +717,9 @@ struct Device:
     fn __moveinit__(mut self, owned rhs: Self):
         self._handle = rhs._handle
         rhs._handle = _c.WGPUDevice()
+
+    fn __copyinit__(mut self, rhs: Self):
+        self._handle = rhs._handle
 
     fn __del__(owned self):
         if self._handle:
@@ -1174,14 +1180,14 @@ struct Instance:
 
     fn create_surface(
         self, window: glfw.Window
-    ) raises -> Surface[__origin_of(window)]:
+    ) raises -> Surface:
         """
         TODO.
         """
         surface = _glfw_get_wgpu_surface(self._handle, window)
         if not surface:
             raise Error("failed to get surface.")
-        return Surface[__origin_of(window)](surface)
+        return Surface(surface)
 
     fn has_wgsl_language_feature(self, feature: WgslFeatureName) -> Bool:
         """
@@ -1675,7 +1681,7 @@ struct Queue:
 #     ]("wgpuRenderBundleEncoderSetLabel")(handle, label)
 
 
-struct RenderPassEncoder:
+struct RenderPassEncoder(Copyable):
     var _handle: _c.WGPURenderPassEncoder
 
     fn __init__(out self, unsafe_ptr: _c.WGPURenderPassEncoder):
@@ -1684,6 +1690,9 @@ struct RenderPassEncoder:
     fn __moveinit__(mut self, owned rhs: Self):
         self._handle = rhs._handle
         rhs._handle = _c.WGPURenderPassEncoder()
+
+    fn __copyinit__(out self, other: Self):
+        self._handle = other._handle
 
     fn __del__(owned self):
         if self._handle:
@@ -2077,7 +2086,7 @@ struct ShaderModule:
 #     ]("wgpuShaderModuleSetLabel")(handle, label)
 
 
-struct Surface[window: ImmutableOrigin]:
+struct Surface:
     var _handle: _c.WGPUSurface
 
     fn __init__(out self, unsafe_ptr: _c.WGPUSurface):
@@ -2164,7 +2173,7 @@ struct Surface[window: ImmutableOrigin]:
 #     """
 #     return _wgpu.get_function[fn (WGPUSurface, UnsafePointer[Int8]) -> None](
 #         "wgpuSurfaceSetLabel"
-#     )(handle, label)
+#     )(handle, label
 
 
 struct Texture:

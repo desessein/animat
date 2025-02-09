@@ -25,13 +25,13 @@ alias StencilFaceState = _c.WGPUStencilFaceState
 struct RequestAdapterOptions[surface: ImmutableOrigin, window: ImmutableOrigin]:
     var power_preference: PowerPreference
     var force_fallback_adapter: Bool
-    var compatible_surface: Optional[Pointer[Surface[window], surface]]
+    var compatible_surface: Optional[Pointer[Surface, surface]]
 
     fn __init__(
         out self,
         power_preference: PowerPreference = PowerPreference.undefined,
         force_fallback_adapter: Bool = False,
-        compatible_surface: Optional[Pointer[Surface[window], surface]] = None,
+        compatible_surface: Optional[Pointer[Surface, surface]] = None,
     ):
         self.power_preference = power_preference
         self.force_fallback_adapter = force_fallback_adapter
@@ -242,8 +242,9 @@ struct SurfaceCapabilities:
     fn __init__(out self, unsafe_ptr: _c.WGPUSurfaceCapabilities):
         self._handle = unsafe_ptr
 
-    fn __del__(owned self):
-        _c.surface_capabilities_free_members(self._handle)
+    # TODO CAuses a crash inside the renderer struct, but works fine when used within the main fn
+    # fn __del__(owned self):
+        # _c.surface_capabilities_free_members(self._handle)
 
     fn usages(self) -> TextureUsage:
         return self._handle.usages
