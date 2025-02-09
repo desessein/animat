@@ -92,7 +92,18 @@ struct Window:
     fn should_close(self) -> Bool:
         return _window_should_close(self._handle)
 
+
     fn __del__(owned self):
         _glfw.get_function[fn (UnsafePointer[_GLFWwindow]) -> None](
             "glfwDestroyWindow"
         )(self._handle)
+
+    fn get_x11_display(self) -> UnsafePointer[NoneType]:
+        return _glfw.get_function[
+            fn (UnsafePointer[_GLFWwindow]) -> UnsafePointer[NoneType]
+        ]("glfwGetX11Display")(self._handle)
+    
+    fn get_x11_window(self) -> Int:
+        return _glfw.get_function[
+            fn (UnsafePointer[_GLFWwindow]) -> Int
+        ]("glfwGetX11Window")(self._handle)
