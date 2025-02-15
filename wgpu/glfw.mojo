@@ -9,12 +9,15 @@ var _glfw = ffi.DLHandle("libglfw.so.3", ffi.RTLD.LAZY)
 alias CLIENT_API = 0x00022001
 alias NO_API = 0
 
+
 # Forward declarations for GLFW types
 struct _GLFWwindow:
     pass
 
+
 struct _GLFWmonitor:
     pass
+
 
 # Platform identification
 @value
@@ -38,6 +41,7 @@ struct Platform:
     fn __ne__(self, rhs: Self) -> Bool:
         return self.value != rhs.value
 
+
 # Core function pointers
 var _window_should_close = _glfw.get_function[
     fn (UnsafePointer[_GLFWwindow]) -> Bool
@@ -49,22 +53,28 @@ var _window_hint = _glfw.get_function[fn (Int32, Int32) -> None](
     "glfwWindowHint"
 )
 
+
 # Public API functions
 fn init():
     _glfw.get_function[fn () -> None]("glfwInit")()
 
+
 fn terminate():
     _glfw.get_function[fn () -> None]("glfwTerminate")()
+
 
 fn poll_events():
     _poll_events()
 
+
 fn window_hint(hint: Int32, value: Int32):
     _window_hint(hint, value)
+
 
 fn get_platform() -> Platform:
     """Returns the currently selected platform."""
     return _glfw.get_function[fn () -> Int32]("glfwGetPlatform")()
+
 
 # Window management
 struct Window:
@@ -92,7 +102,6 @@ struct Window:
     fn should_close(self) -> Bool:
         return _window_should_close(self._handle)
 
-
     fn __del__(owned self):
         _glfw.get_function[fn (UnsafePointer[_GLFWwindow]) -> None](
             "glfwDestroyWindow"
@@ -102,8 +111,26 @@ struct Window:
         return _glfw.get_function[
             fn (UnsafePointer[_GLFWwindow]) -> UnsafePointer[NoneType]
         ]("glfwGetX11Display")(self._handle)
-    
+
     fn get_x11_window(self) -> Int:
-        return _glfw.get_function[
-            fn (UnsafePointer[_GLFWwindow]) -> Int
-        ]("glfwGetX11Window")(self._handle)
+        return _glfw.get_function[fn (UnsafePointer[_GLFWwindow]) -> Int](
+            "glfwGetX11Window"
+        )(self._handle)
+
+    fn get_cursor_pos(self) -> (Float64, Float64):
+        var x_pointer: Float64 = 0.0
+        var y_pointer: Float64 = 0.0
+
+        _glfw.get_function[
+            fn (
+                UnsafePointer[_GLFWwindow], 
+                UnsafePointer[Float64], 
+                UnsafePointer[Float64]
+            ) -> None
+        ]("glfwGetCursorPos")(
+            self._handle, 
+            UnsafePointer[Float64].address_of(x_pointer), 
+            UnsafePointer[Float64].address_of(y_pointer)
+            )
+        
+        return (x_pointer, y_pointer)

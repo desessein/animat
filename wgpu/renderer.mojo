@@ -118,7 +118,7 @@ struct Renderer[T: Animation]:
         )
         return device.create_render_pipeline(descriptor=desc)
 
-    fn render(self, ref u_time: Float32) raises -> Float32:
+    fn render(self, ref u_time: Float32, ref mouse_pos: Float32) raises -> Float32:
         with self.surface.get_current_texture() as surface_tex:
             if surface_tex.status != wgpu.SurfaceGetCurrentTextureStatus.success:
                 raise Error("failed to get surface tex")
@@ -149,6 +149,15 @@ struct Renderer[T: Animation]:
                 0,
                 Span[UInt8, __origin_of(u_time)](
                     ptr=UnsafePointer.address_of(u_time).bitcast[UInt8](),
+                    length=sizeof[Float32](),
+                ),
+            )
+
+            self.queue.write_buffer(
+                self.uniform_buffer,
+                512,  
+                Span[UInt8, __origin_of(mouse_pos)](
+                    ptr=UnsafePointer.address_of(mouse_pos).bitcast[UInt8](),
                     length=sizeof[Float32](),
                 ),
             )

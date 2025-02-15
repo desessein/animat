@@ -20,7 +20,7 @@ from wgpu import (
     PipelineLayoutDescriptor,
     BindGroupEntry,
     BufferBinding,
-    WaveAnimation
+    WaveInterferenceAnimation
 )
 from sys.info import sizeof
 
@@ -30,14 +30,16 @@ from collections import Optional
 def main():
     glfw.init()
     glfw.window_hint(glfw.CLIENT_API, glfw.NO_API)
-    window = glfw.Window(640, 480, "Hello, WebGPU")
+    window = glfw.Window(640, 1080, "Hello, WebGPU")
 
-    animation = WaveAnimation()
-    renderer = Renderer[WaveAnimation](window, animation)
+    animation = WaveInterferenceAnimation()
+    renderer = Renderer[WaveInterferenceAnimation](window, animation)
 
     u_time = Float32(0)
     while not window.should_close():
+        x, y = window.get_cursor_pos()
+        print(y)
         glfw.poll_events()
-        u_time = renderer.render(u_time)
+        u_time = renderer.render(u_time, Float32(x))
     
     glfw.terminate()
