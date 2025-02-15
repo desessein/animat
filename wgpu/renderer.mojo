@@ -12,8 +12,10 @@ struct Renderer[T: Animation]:
     var uniform_buffer: ArcPointer[wgpu.Buffer]
     var queue: wgpu.Queue
     var adapter: wgpu.Adapter
+    var animation: T
 
     fn __init__(mut self, ref window: glfw.Window, animation: T) raises:
+        self.animation = animation
         instance = wgpu.Instance()
         self.surface = instance.create_surface(window)
         self.adapter = instance.request_adapter_sync(self.surface)
@@ -155,7 +157,7 @@ struct Renderer[T: Animation]:
             rp.set_pipeline(self.pipeline)
             rp.set_vertex_buffer(0, 0, self.vertex_buffer[].get_size(), self.vertex_buffer[])
             rp.set_bind_group(0, self.uniform_bind_group, List[UInt32]())
-            rp.draw(24, 1, 0, 0)
+            rp.draw(self.animation.get_total_vertices(), 1, 0, 0)
             rp.end()
 
             command = encoder.finish()
